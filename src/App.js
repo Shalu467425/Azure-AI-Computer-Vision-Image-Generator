@@ -1,72 +1,68 @@
 import React, { useState } from "react";
 import "./App.css";
+import { analyzeImage } from "./azure-image-analysis";
 
 function App() {
-  const [imageUrl, setImageUrl] = useState("");
-  const [fileName, setFileName] = useState("");
+  const endpoint = process.env.REACT_APP_AZURE_VISION_ENDPOINT;
+  const key = process.env.REACT_APP_AZURE_VISION_KEY;
+  const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState(null);
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFileName(file.name);
-      // Later: You can send this file to backend
+  const handleAnalyze = async () => {
+    setLoading(true);
+    setResults(null);
+    setError(null);
+
+    try {
+      const data = await analyzeImage(inputValue);
+      setResults(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleGenerate = () => {
+    console.log("Generate Image clicked. Input:", inputValue);
+  };
+
+  const DisplayResults = () => {
+    if (!results) return null;
+    return (
+      <div className="results">
+        <h2>Analysis Results</h2>
+        <img src={inputValue} alt="Analyzed" width="300" />
+        <pre>{JSON.stringify(results, null, 2)}</pre>
+      </div>
+    );
   };
 
   return (
     <div className="app-container">
-      <div className="card">
-        {/* Title */}
-        <h1 className="title">Azure Image Captioning</h1>
-        <p className="subtitle">
-          Enter an image URL or upload a file to analyze, or generate an image
-          from a prompt.
-        </p>
+      <h1 className="app-title">AI Image App</h1>
 
-        {/* URL/Prompt Input */}
-        <div className="input-group">
-          <label className="label">Image URL or Prompt</label>
-          <input
-            type="text"
-            placeholder="Paste an image URL or enter a text prompt..."
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            className="input-box"
-          />
-        </div>
+      <input
+        type="text"
+        placeholder="Enter image URL..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        className="app-input"
+      />
 
-        {/* File Upload */}
-        <div className="input-group">
-          <label className="label">Upload Image</label>
-          <div className="file-upload">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="file-input"
-            />
-            {fileName && (
-              <span className="file-name">Selected: {fileName}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="button-group">
-          <button
-            onClick={() => alert("Analyze button clicked (logic pending)")}
-            className="btn analyze-btn"
-          >
-            Analyze Image
-          </button>
-          <button
-            onClick={() => alert("Generate button clicked (logic pending)")}
-            className="btn generate-btn"
-          >
-            Generate Image
-          </button>
-        </div>
+      <div className="button-group">
+        <button className="app-button" onClick={handleAnalyze} disabled={loading}>
+          {loading ? "Analyzing..." : "Analyze Image"}
+        </button>
+        <button className="app-button" onClick={handleGenerate}>
+          Generate Image
+        </button>
       </div>
+
+      {error && <p className="error">{error}</p>}
+      <DisplayResults />
     </div>
   );
 }
