@@ -1,0 +1,54 @@
+.app {
+  text-align: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+input[type="text"] {
+  width: 60%;
+  padding: 8px;
+  margin: 10px;
+}
+
+input[type="file"] {
+  margin: 10px;
+}
+
+.drop-zone {
+  border: 2px dashed #aaa;
+  padding: 20px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  border-color: #333;
+}
+
+.preview {
+  margin: 20px;
+}
+
+.results {
+  text-align: left;
+  margin: 20px auto;
+  width: 80%;
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+
+}
+
+.results h4 {
+  margin-bottom: 5px;
+  margin-top: 15px;
+}
+
+.results ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.results p {
+  margin: 5px 0;
+}
